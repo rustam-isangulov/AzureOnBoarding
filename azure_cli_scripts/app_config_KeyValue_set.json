@@ -1,0 +1,17 @@
+{
+  "ProcessBlue:BlobConnection": "https://processingoutputs.blob.core.windows.net",
+  "ProcessBlue:Output_container": "container-blue",
+  "ProcessBlue:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net",
+  "ProcessBlue:Trigger_subscription": "blue",
+  "ProcessBlue:Trigger_topic": "colors_to_process",
+  "ProcessRed:BlobConnection": "https://processingoutputs.blob.core.windows.net",
+  "ProcessRed:Output_container": "container-red",
+  "ProcessRed:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net",
+  "ProcessRed:Trigger_subscription": "red",
+  "ProcessRed:Trigger_topic": "colors_to_process",
+  "ProcessingStarter:BlobConnection": "https://processingoutputs.blob.core.windows.net",
+  "ProcessingStarter:BlobConnection__serviceUri": "https://processingoutputs.blob.core.windows.net",
+  "ProcessingStarter:Output_container": "container-all",
+  "ProcessingStarter:Output_topic": "colors_to_process",
+  "ProcessingStarter:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net"
+}

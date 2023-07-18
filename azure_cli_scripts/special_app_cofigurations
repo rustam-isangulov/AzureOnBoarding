@@ -1,0 +1,119 @@
+#!/bin/bash
+
+funcAppName=$funcAppNameRed
+
+echo Adding application settings for $funcAppName
+
+configName="BlobConnection__serviceUri"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Output_container"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="ServiceBusConnection__fullyQualifiedNamespace"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:ServiceBusConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_topic"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_subscription"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+
+funcAppName=$funcAppNameBlue
+
+echo Adding application settings for $funcAppName
+
+configName="BlobConnection__serviceUri"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Output_container"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="ServiceBusConnection__fullyQualifiedNamespace"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:ServiceBusConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_topic"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_subscription"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+
+funcAppName=$funcAppNameStarter
+
+echo Adding application settings for $funcAppName
+
+configName="AppConfigEndPoint"
+configValue="https://$appConfigServiceName.azconfig.io"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="BlobConnection__serviceUri"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Output_container"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"

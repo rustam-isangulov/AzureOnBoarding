@@ -1,0 +1,5 @@
+#!/bin/bash
+
+. $(dirname "$0")/0.0.SET_VARIABLES
+
+. $(dirname "$0")/az_delete_resource_group

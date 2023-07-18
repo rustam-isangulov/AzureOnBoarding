@@ -1,0 +1,27 @@
+#!/bin/bash
+
+currDir=$(dirname "$0")
+
+. $currDir/0.0.SET_VARIABLES
+
+. $currDir/az_create_resource_group
+. $currDir/az_create_service_bus
+. $currDir/az_create_blob_storage
+. $currDir/az_create_app_config
+
+funcAppName=$funcAppNameStarter
+storageName=$storageAppStarter
+
+. $currDir/az_create_func_app
+
+funcAppName=$funcAppNameRed
+storageName=$storageAppRed
+
+. $currDir/az_create_func_app
+
+funcAppName=$funcAppNameBlue
+storageName=$storageAppBlue
+
+. $currDir/az_create_func_app
+
+. $currDir/special_app_cofigurations

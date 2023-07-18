@@ -1,0 +1,60 @@
+#!/bin/bash
+
+echo Creating new storage account: $storageName for function app: $funcAppName
+
+az storage account create \
+     --name $storageName\
+     --location $location \
+     --resource-group $resourceGroup \
+     --sku Standard_LRS \
+     --allow-blob-public-access true
+
+echo Creating new function app: $funcAppName
+
+az functionapp create \
+     --resource-group $resourceGroup \
+     --consumption-plan-location $location \
+     --runtime dotnet-isolated \
+     --functions-version 4 \
+     --name $funcAppName \
+     --storage-account $storageName  \
+     --assign-identity "[system]"
+
+echo Updating App Insights for $funcAppName to work with $logWorkspace Logging Workspace
+
+az monitor app-insights component update \
+     --app $funcAppName \
+     --resource-group $resourceGroup \
+     --workspace $logWorkspace
+
+echo Updating role-based access to Service Bus and Blob Storage for the app: $funcAppName
+
+cmdFuncAppId=$(az functionapp identity show -g $resourceGroup -n $funcAppName --query principalId)
+funcAppId="${cmdFuncAppId//[$'\t\r\n ']}"
+funcAppId="${funcAppId%\"}"
+funcAppId="${funcAppId#\"}"
+
+az role assignment create \
+    --role "Azure Service Bus Data Sender" \
+    --assignee-object-id $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+     --role "Azure Service Bus Data Receiver" \
+     --assignee $funcAppId \
+     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+    --role "Storage Blob Data Owner" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "Storage Blob Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "App Configuration Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName

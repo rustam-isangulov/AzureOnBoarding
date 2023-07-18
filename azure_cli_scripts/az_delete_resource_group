@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [[ $(az group exists --name $resourceGroup) = "true"* ]]; then
+    echo Deleting resource group: $resourceGroup
+    az group delete \
+       --resource-group $resourceGroup -y
+else
+    echo Resource does not exist: $resourceGroup
+fi

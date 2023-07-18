@@ -1,0 +1,44 @@
+#!/bin/bash
+
+echo Creating new service bus namespace: $serviceBusNamespace
+
+az servicebus namespace create \
+     --resource-group $resourceGroup \
+     --name $serviceBusNamespace \
+     --location $location \
+     --sku Standard
+
+az servicebus topic create \
+     --name $topicName \
+     --namespace-name $serviceBusNamespace \
+     --resource-group $resourceGroup
+
+az servicebus topic subscription create \
+     --name $subscriptionRed \
+     --topic-name $topicName \
+     --namespace-name $serviceBusNamespace \
+     --resource-group $resourceGroup
+
+az servicebus topic subscription create \
+     --name $subscriptionBlue \
+     --topic-name $topicName \
+     --namespace-name $serviceBusNamespace \
+     --resource-group $resourceGroup
+
+az servicebus topic subscription rule create \
+   --resource-group $resourceGroup \
+   --namespace-name $serviceBusNamespace \
+   --topic-name $topicName \
+   --subscription-name $subscriptionBlue \
+   --name correlation$subscriptionBlue \
+   --filter-type CorrelationFilter \
+   --correlation-filter color=$subscriptionBlue
+
+az servicebus topic subscription rule create \
+   --resource-group $resourceGroup \
+   --namespace-name $serviceBusNamespace \
+   --topic-name $topicName \
+   --subscription-name $subscriptionRed \
+   --name correlation$subscriptionRed \
+   --filter-type CorrelationFilter \
+   --correlation-filter color=$subscriptionRed

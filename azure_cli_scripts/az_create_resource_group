@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if [[ $(az group exists --name $resourceGroup) = "false"* ]]; then
+    echo Creating new resource group: $resourceGroup
+
+    az group create \
+	 --name $resourceGroup \
+	 --location "$location"
+
+    echo Creating new Logging Workspace: $logWorkspace
+
+    az monitor log-analytics workspace create \
+	 --resource-group $resourceGroup \
+	 --workspace-name $logWorkspace
+else
+    echo Resource group already exists: $resourceGroup
+fi

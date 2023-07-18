@@ -1,0 +1,45 @@
+#!/bin/bash
+
+currDir=$(dirname "$0")
+
+# Global
+
+subscriptionId="00000000-0000-0000-0000-000000000000"
+location="uksouth"
+
+# Resource Group variables
+
+resourceGroup="isarust-demo-rg" ### unique within subscription
+logWorkspace="isarust-demo-logworkspace"
+
+# Service Bus variables
+
+serviceBusNamespace="ProcessingQueues" ### unique within subscription
+
+topicName="colors_to_process"
+subscriptionRed="red"
+subscriptionBlue="blue"
+
+# Blob Storage variables
+
+blobStorageAccount="processingoutputs" ### unique within subscription
+
+containerAll="container-all"
+containerRed="container-red"
+containerBlue="container-blue"
+
+# App Configuration variables
+
+appConfigServiceName="isarust-app-config" ### unique within subscription
+appConfigKeyValueFile="$currDir/app_config_KeyValue_set.json"
+
+# Function variables
+
+funcAppNameStarter="ProcessingStarter" ### unique within subscription
+storageAppStarter="procstart100rage" ### unique within subscription
+
+funcAppNameRed="ProcessRed" ### unique within subscription
+storageAppRed="red100rage" ### unique within subscription
+
+funcAppNameBlue="ProcessBlue" ### unique within subscription
+storageAppBlue="blue100rage" ### unique within subscription

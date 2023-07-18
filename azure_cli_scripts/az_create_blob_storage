@@ -1,0 +1,25 @@
+#!/bin/bash
+
+echo Creating new storage account: $blobStorageAccount
+
+az storage account create \
+     --name $blobStorageAccount \
+     --location $location \
+     --resource-group $resourceGroup \
+     --sku Standard_LRS \
+     --allow-blob-public-access true
+
+az storage container create \
+     --name $containerAll \
+     --account-name $blobStorageAccount \
+     --public-access container
+
+az storage container create \
+     --name $containerRed \
+     --account-name $blobStorageAccount \
+     --public-access container
+
+az storage container create \
+     --name $containerBlue \
+     --account-name $blobStorageAccount \
+     --public-access container

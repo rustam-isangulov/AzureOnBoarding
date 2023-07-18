@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo Creating new app configuration service: $appConfigServiceName
+
+az appconfig create \
+  --name $appConfigServiceName \
+  --location $location \
+  --resource-group $resourceGroup \
+  --query endpoint \
+  --sku Standard
+
+
+echo Importing configuration Key-Values from: $appConfigKeyValueFile
+
+az appconfig kv import \
+   --name $appConfigServiceName \
+   --source file \
+   --format json \
+   --path $appConfigKeyValueFile \
+   --yes
