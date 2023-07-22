@@ -22,7 +22,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 }
 ```
 
-### Multi-response output binding
+### Multi-output binding
 
 Following code uses multi-output binding for http response and storage blob file:
 
@@ -41,10 +41,10 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 	// ...
 
 	return new MultiOutputBlue()
-    {
+	{
         BlobContent = blobPayload,
         HttpResponse = response
-    };
+	};
 }
 ```
 
@@ -60,9 +60,11 @@ public class MultiOutputBlue
 }
 ```
 
-Values for `Output_container` and `BlobConenction` are retrieved from App Configuration service via references in appsettings, following azure cli script configures refernces:
+### App Configuration service to store binding paramaters
 
-```shell
+Values for `Output_container` and `BlobConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
+
+```bash
 configName="BlobConnection__serviceUri"
 configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
 
@@ -80,7 +82,7 @@ az functionapp config appsettings set \
      --settings "$configName=$configValue"
 ```
 
-App Configuration service stores actual values as shown below:
+App Configuration service stores actual values and configured as shown below:
 
 ```json
 {
@@ -91,7 +93,69 @@ App Configuration service stores actual values as shown below:
 
 ### SDK Service Bus output to a topic
 
+`ProcessingStarter` functions send messages to Service Bus topic using SDK client via helper object as shown below:
+
+```csharp
+[Function(nameof(ProcessBlue))]
+public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
+{
+	// ...
+
+    var busMessage = new ServiceBusMessage($"Blue message to process")
+        {
+            CorrelationId = "blue",
+            ApplicationProperties =
+                {
+                    { "color", "blue" },
+                    { "text", "A different text payload." },
+                    { "number", 1000}
+				},
+	    };
+
+	// ...
+
+    await _serviceBusTopicOutput.SendMessageAsync(busMessage);
+
+	// ...
+}
+```
+
+`_serviceBusTopicOutput` is a reference to `IServiceBusOutputToTopic` interface which is implemented by `ServiceBusOutputToColorsToProcess` which creates Service Bus sender as shown below:
+
+```csharp
+public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
+{
+	// ...
+
+    public ServiceBusOutputToColorsToProcess(ILogger<ServiceBusOutputToColorsToProcess> logger, IConfiguration configuration)
+    {
+		// ...
+
+        _sender = new ServiceBusClient(_configuration[ConfigurationKeys.ServiceBusConnection], new DefaultAzureCredential())
+            .CreateSender(_configuration[ConfigurationKeys.ServiceBusTopic]);
+    }
+
+    public async Task SendMessageAsync(ServiceBusMessage message)
+    {
+		// ...
+
+        await _sender.SendMessageAsync(message);
+    }
+}
+```
+
+`ServiceBusConnection` and `ServiceBusTopic` parameters are stored in the App Configuration service and configured as shown below:
+
+```json
+{
+  "ProcessingStarter:Output_topic": "colors_to_process",
+  "ProcessingStarter:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net"
+}
+```
+
 ### Using App Configuration service
+
+### RBAC configuration for Blob Storage, Servcie Bus and App Config Service
 
 ### Unit test for functions
 
