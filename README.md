@@ -120,7 +120,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 }
 ```
 
-`_serviceBusTopicOutput` is a reference to `IServiceBusOutputToTopic` interface which is implemented by `ServiceBusOutputToColorsToProcess` which creates Service Bus sender as shown below:
+`_serviceBusTopicOutput` is a reference to `IServiceBusOutputToTopic` interface which is implemented by `ServiceBusOutputToColorsToProcess` that in turn creates Service Bus sender as shown below:
 
 ```csharp
 public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
@@ -153,9 +153,91 @@ public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
 }
 ```
 
+To enable depndency injection `ServiceBusOutput`the following configuration to the `HostBuilder` was added:
+
+```csharp
+var host = new HostBuilder()
+
+	// ...
+
+	.ConfigureServices((context, services) =>
+    {
+        services.AddSingleton<IServiceBusOutputToTopic, ServiceBusOutputToColorsToProcess>();
+    })
+    .Build();
+
+	// ...
+```
+
 ### Using App Configuration service
 
-### RBAC configuration for Blob Storage, Servcie Bus and App Config Service
+The following code adds Azure App Configuration to the function app:
+
+```csharp
+var host = new HostBuilder()
+
+	// ...
+
+    .ConfigureAppConfiguration(builder =>
+    {
+        builder.AddAzureAppConfiguration(options =>
+        {
+            options.Connect(
+                new Uri(Environment.GetEnvironmentVariable(ConfigurationKeys.AppConfigEndpoint)
+                ?? throw new ArgumentNullException($"Environment variable {ConfigurationKeys.AppConfigEndpoint} is null!")),
+                new DefaultAzureCredential())
+            .Select("ProcessingStarter:*", LabelFilter.Null)
+            .Select("ProcessingStarter:*", "CUSTOM");
+        });
+    })
+
+	// ...
+
+    .Build();
+```
+
+End point for the App Configuration service is stored in appsettings, following azure cli commands configure it:
+
+```bash
+configName="AppConfigEndPoint"
+configValue="https://$appConfigServiceName.azconfig.io"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+```
+
+### RBAC configuration for Blob Storage, Service Bus and App Configuration
+
+When the function app is created the following roles are assigned to it in order to access Blob Storage, Service Bus and App Configuration:
+
+```bash
+az role assignment create \
+    --role "Azure Service Bus Data Sender" \
+    --assignee-object-id $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+     --role "Azure Service Bus Data Receiver" \
+     --assignee $funcAppId \
+     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+    --role "Storage Blob Data Contributor" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "Storage Blob Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "App Configuration Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName
+```
 
 ### Unit test for functions
 
