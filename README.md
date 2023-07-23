@@ -95,7 +95,7 @@ App Configuration service stores actual values and configured as shown below:
   "ProcessingStarter:BlobConnection": "https://processingoutputs.blob.core.windows.net",
   "ProcessingStarter:Output_container": "container-all",
 }
-````
+```
 
 ### SDK Service Bus output to a topic
 
@@ -245,7 +245,134 @@ az role assignment create \
     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName
 ```
 
-### DevOps: Creating infrastructure with azure cli
+## ProcessBlue: Service Bus trigger, Blob Storage output
+
+### ServiceBusTrigger input binding
+
+`ServiceBusTrigger` service bus triggered function is defined as follows:
+
+```csharp
+[Function(nameof(ServiceBusTrigger))]
+[BlobOutput("%Output_container%/output_{DateTime}_{rand-guid}.txt", Connection = "BlobConnection")]
+public string Run
+([ServiceBusTrigger("%Trigger_topic%","%Trigger_subscription%", Connection = "ServiceBusConnection")]
+  string myQueueItem, FunctionContext context)
+{
+	// ... more code ...
+}
+```
+
+### Blob Storage output binding
+
+Following code uses declarative output binding for storage blob file:
+
+```csharp
+[Function(nameof(ServiceBusTrigger))]
+[BlobOutput("%Output_container%/output_{DateTime}_{rand-guid}.txt", Connection = "BlobConnection")]
+public string Run
+([ServiceBusTrigger("%Trigger_topic%","%Trigger_subscription%", Connection = "ServiceBusConnection")]
+    string myQueueItem, FunctionContext context)
+{
+	// ...
+
+    var blobContent = $"{appPropertiesJson}";
+
+	// ...
+
+    return blobContent;
+}
+```
+
+### App Configuration service to store binding paramaters
+
+Values for `Output_container`, `BlobConnection`. `Trigger_topic`, `Trigger_subscription`, and `ServiceBusConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
+
+```bash
+configName="BlobConnection__serviceUri"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Output_container"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="ServiceBusConnection__fullyQualifiedNamespace"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:ServiceBusConnection)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_topic"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+
+configName="Trigger_subscription"
+configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
+
+az functionapp config appsettings set \
+     --name $funcAppName \
+     --resource-group $resourceGroup \
+     --settings "$configName=$configValue"
+```
+
+App Configuration service stores actual values and configured as shown below:
+
+```json
+{
+  "ProcessBlue:BlobConnection": "https://processingoutputs.blob.core.windows.net",
+  "ProcessBlue:Output_container": "container-blue",
+  "ProcessBlue:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net",
+  "ProcessBlue:Trigger_subscription": "blue",
+  "ProcessBlue:Trigger_topic": "colors_to_process",
+}
+```
+
+### RBAC configuration for Blob Storage and Service Bus and App Configuration
+
+When the function app is created the following roles are assigned to it in order to access Blob Storage, Service Bus and App Configuration:
+
+```bash
+az role assignment create \
+    --role "Azure Service Bus Data Sender" \
+    --assignee-object-id $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+     --role "Azure Service Bus Data Receiver" \
+     --assignee $funcAppId \
+     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
+
+az role assignment create \
+    --role "Storage Blob Data Contributor" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "Storage Blob Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
+
+az role assignment create \
+    --role "App Configuration Data Reader" \
+    --assignee $funcAppId \
+    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName
+```
+
+## DevOps: Creating infrastructure with azure cli
 
 `azure_cli_scripts/0.1.RUN_ALL` script creates infrastructure required for for the project including following steps:
 - setup paramaters that are defined in `azure_cli_scripts/0.0.SET_VARIABLES`
@@ -272,7 +399,7 @@ az role assignment create \
   - references to Service Bus subscriptions
 
 
-### DevOps: Creating build/test/deploy pipline with Yaml
+## DevOps: Creating build/test/deploy pipline with Yaml
 
 All three Functions are built, tested and deployed on each new pull request using the azure pipeline defined in `pipelines/azure-pipelines.yml`. Pipeline sequence for each app look similar to `ProcessingStarter`:
 
