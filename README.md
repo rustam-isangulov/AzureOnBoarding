@@ -10,7 +10,7 @@ Topics explored in this project:
 
 ## Objective
 
-Implement a set of three function apps following a component diagram as shown below
+Implement a set of three function apps following the component diagram shown below:
 
 ![component diagram](AzureOnBoardingProject.jpeg)
 
@@ -20,7 +20,7 @@ Implement a set of three function apps following a component diagram as shown be
 
 ### HttpTrigger input binding
 
-`ProcessBlue` http triggered function is defined as follows:
+`ProcessBlue` HTTP triggered function is defined as follows:
 
 ```csharp
 [Function(nameof(ProcessBlue))]
@@ -32,7 +32,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 
 ### Multi-output binding
 
-Following code uses multi-output binding for http response and storage blob file:
+The following code uses multi-output binding for HTTP response and storage blob file:
 
 ```csharp
 [Function(nameof(ProcessBlue))]
@@ -56,7 +56,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 }
 ```
 
-Output bindings are declaratively defined in the follwoing class:
+Output bindings are declaratively defined in the following class:
 
 ```csharp
 public class MultiOutputBlue
@@ -70,7 +70,7 @@ public class MultiOutputBlue
 
 ### App Configuration service to store binding parameters
 
-Values for `Output_container` and `BlobConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
+Values for `Output_container` and `BlobConnection` are retrieved from App Configuration service via references in app settings, following Azure CLI script configures references:
 
 ```bash
 configName="BlobConnection__serviceUri"
@@ -90,7 +90,7 @@ az functionapp config appsettings set \
      --settings "$configName=$configValue"
 ```
 
-App Configuration service stores actual values and configured as shown below:
+App Configuration service stores actual values and is configured as shown below:
 
 ```json
 {
@@ -101,7 +101,7 @@ App Configuration service stores actual values and configured as shown below:
 
 ### SDK Service Bus output to a topic
 
-`ProcessingStarter` functions send messages to Service Bus topic using SDK client via helper object as shown below:
+`ProcessingStarter` functions send messages to the Service Bus topic using SDK client via helper object as shown below:
 
 ```csharp
 [Function(nameof(ProcessBlue))]
@@ -161,7 +161,7 @@ public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
 }
 ```
 
-To enable depndency injection `ServiceBusOutput`the following configuration to the `HostBuilder` was added:
+To enable dependency injection `ServiceBusOutput` the following configuration to the `HostBuilder` was added:
 
 ```csharp
 var host = new HostBuilder()
@@ -204,7 +204,7 @@ var host = new HostBuilder()
     .Build();
 ```
 
-End point for the App Configuration service is stored in appsettings, following azure cli commands configure it:
+Endpoint for the App Configuration service is stored in app settings, following Azure CLI commands configure it:
 
 ```bash
 configName="AppConfigEndPoint"
@@ -266,7 +266,7 @@ public string Run
 
 ### Blob Storage output binding
 
-Following code uses declarative output binding for storage blob file:
+The following code uses declarative output binding for storage blob files:
 
 ```csharp
 [Function(nameof(ServiceBusTrigger))]
@@ -287,7 +287,7 @@ public string Run
 
 ### App Configuration service to store binding parameters
 
-Values for `Output_container`, `BlobConnection`. `Trigger_topic`, `Trigger_subscription`, and `ServiceBusConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
+Values for `Output_container`, `BlobConnection`. `Trigger_topic`, `Trigger_subscription`, and `ServiceBusConnection` are retrieved from the App Configuration service via references in app settings, following Azure CLI script configures references:
 
 ```bash
 configName="BlobConnection__serviceUri"
@@ -331,7 +331,7 @@ az functionapp config appsettings set \
      --settings "$configName=$configValue"
 ```
 
-App Configuration service stores actual values and configured as shown below:
+App Configuration service stores actual values and is configured as shown below:
 
 ```json
 {
@@ -376,34 +376,34 @@ az role assignment create \
 
 ## DevOps: Creating infrastructure with azure cli
 
-`azure_cli_scripts/0.1.RUN_ALL` script creates infrastructure required for for the project including following steps:
-- setup paramaters that are defined in `azure_cli_scripts/0.0.SET_VARIABLES`
-- create Resource Group with Log Analytics workspace
+`azure_cli_scripts/0.1.RUN_ALL` script creates the infrastructure required for the project including the following steps:
+- setup parameters that are defined in `azure_cli_scripts/0.0.SET_VARIABLES`
+- create a Resource Group with a Log Analytics workspace
 - create Service Bus namespace with
   - Topic
   - two Subscriptions
   - Correlation Filters for each subscription
 - create Blob Storage account with
   - three Containers
-- create App Confgiruation with
+- create App Configuration with
   - configuration key-value pairs from `azure_cli_scripts/app_config_KeyValue_set.json`
 - create three Function Apps with
-  - starage account per app
+  - storage account per app
   - App Insight connected to the resource log analytics workspace
   - assigned roles to access Service Bus
   - assigned roles to access Blob Storage
   - assigned roles to access App Configuration
 - configure app settings for each Function App including
-  - end point for App Configuration
+  - endpoint for App Configuration
   - reference for BlobConnection strings
   - reference for Blob output container
   - references to Service Bus topic
   - references to Service Bus subscriptions
 
 
-## DevOps: Creating build/test/deploy pipline with Yaml
+## DevOps: Creating build/test/deploy pipeline with Yaml
 
-All three Functions are built, tested and deployed on each new pull request using the azure pipeline defined in `pipelines/azure-pipelines.yml`. Pipeline sequence for each app look similar to `ProcessingStarter`:
+All three Functions are built, tested and deployed on each new pull request using the Azure pipeline defined in `pipelines/azure-pipelines.yml`. The pipeline sequence for each app looks similar to `ProcessingStarter`:
 
 ```yaml
 pr:
