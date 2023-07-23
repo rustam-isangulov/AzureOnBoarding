@@ -1,16 +1,18 @@
 # Azure on-boarding project
 
-Topcs explored in this project:
+Topics explored in this project:
 - [Azure Functions in isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
 - [Service Bus with topics and subscriptions](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-tutorial-topics-subscriptions-cli)
 - [Blob Storage bindings for Azure Function](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob?tabs=isolated-process%2Cextensionv5%2Cextensionv3&pivots=programming-language-csharp)
 - [App Configuration](https://learn.microsoft.com/en-us/azure/app-service/app-service-configuration-references)
-- [Azure CLI for infrastrucuture as code](https://learn.microsoft.com/en-us/cli/azure/what-is-azure-cli)
+- [Azure CLI for infrastructure as code](https://learn.microsoft.com/en-us/cli/azure/what-is-azure-cli)
 - [RBAC for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts?tabs=v4#user-management-permissions)
 
 ## Objective
 
-[diagram]
+Implement a set of three function apps following a component diagram as shown below
+
+![component diagram](AzureOnBoardingProject.jpeg)
 
 ## ProcessingStarter
 
