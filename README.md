@@ -66,7 +66,7 @@ public class MultiOutputBlue
 }
 ```
 
-### App Configuration service to store binding paramaters
+### App Configuration service to store binding parameters
 
 Values for `Output_container` and `BlobConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
 
@@ -283,7 +283,7 @@ public string Run
 }
 ```
 
-### App Configuration service to store binding paramaters
+### App Configuration service to store binding parameters
 
 Values for `Output_container`, `BlobConnection`. `Trigger_topic`, `Trigger_subscription`, and `ServiceBusConnection` are retrieved from App Configuration service via references in appsettings, following azure cli script configures references:
 
@@ -341,7 +341,7 @@ App Configuration service stores actual values and configured as shown below:
 }
 ```
 
-### RBAC configuration for Blob Storage and Service Bus and App Configuration
+### RBAC configuration for Blob Storage, Service Bus and App Configuration
 
 When the function app is created the following roles are assigned to it in order to access Blob Storage, Service Bus and App Configuration:
 
