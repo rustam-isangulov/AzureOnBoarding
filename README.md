@@ -248,7 +248,7 @@ az role assignment create \
 ### DevOps: Creating infrastructure with azure cli
 
 `azure_cli_scripts/0.1.RUN_ALL` script creates infrastructure required for for the project including following steps:
-- setup paramaters defined in `azure_cli_scripts/0.0.SET_VARIABLES`
+- setup paramaters that are defined in `azure_cli_scripts/0.0.SET_VARIABLES`
 - create Resource Group with Log Analytics workspace
 - create Service Bus namespace with
   - Topic
@@ -273,3 +273,58 @@ az role assignment create \
 
 
 ### DevOps: Creating build/test/deploy pipline with Yaml
+
+All three Functions are built, tested and deployed on each new pull request using the azure pipeline defined in `pipelines/azure-pipelines.yml`. Pipeline sequence for each app look similar to `ProcessingStarter`:
+
+```yaml
+pr:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: 'test'
+    projects: '**/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: 'ProcessingStarter dotnet publish'
+  inputs:
+    command: publish
+    arguments: '--configuration Release --output publish_output_ProcessingStarter'
+    projects: '**/ProcessingStarter.csproj'
+    publishWebProjects: false
+    modifyOutputPath: false
+    zipAfterPublish: false
+
+- task: ArchiveFiles@2
+  displayName: "ProcessingStarter archive files"
+  inputs:
+    rootFolderOrFile: "$(System.DefaultWorkingDirectory)/publish_output_ProcessingStarter"
+    includeRootFolder: false
+    archiveFile: "$(System.DefaultWorkingDirectory)/ProcessingStarter_build$(Build.BuildId).zip"
+
+- task: AzureFunctionApp@2
+  displayName: "ProcessingStarter Deploy"
+  inputs:
+    azureSubscription: 'isarust-conn'
+    appType: 'functionApp'
+    appName: 'ProcessingStarter'
+    deployToSlotOrASE: true
+    resourceGroupName: 'isarust-demo-rg'
+    slotName: 'production'
+    package: '$(System.DefaultWorkingDirectory)/ProcessingStarter_build$(Build.BuildId).zip'
+    deploymentMethod: 'auto'
+```
+
+---
