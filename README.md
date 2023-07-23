@@ -1,6 +1,12 @@
 # Azure on-boarding project
 
-Azure on-boarding project: Azure Functions, Service Bus, Blob Storage, App Configuration, Azure CLI, RBAC
+Topcs explored in this project:
+- [Azure Functions in isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
+- [Service Bus with topics and subscriptions](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-tutorial-topics-subscriptions-cli)
+- [Blob Storage bindings for Azure Function](https://learn.microsoft.com/en-us/azure/azure-functions/functions-bindings-storage-blob?tabs=isolated-process%2Cextensionv5%2Cextensionv3&pivots=programming-language-csharp)
+- [App Configuration](https://learn.microsoft.com/en-us/azure/app-service/app-service-configuration-references)
+- [Azure CLI for infrastrucuture as code](https://learn.microsoft.com/en-us/cli/azure/what-is-azure-cli)
+- [RBAC for Azure Functions](https://learn.microsoft.com/en-us/azure/azure-functions/security-concepts?tabs=v4#user-management-permissions)
 
 ## Objective
 
@@ -239,8 +245,31 @@ az role assignment create \
     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName
 ```
 
-### Unit test for functions
-
 ### DevOps: Creating infrastructure with azure cli
+
+`azure_cli_scripts/0.1.RUN_ALL` script creates infrastructure required for for the project including following steps:
+- setup paramaters defined in `azure_cli_scripts/0.0.SET_VARIABLES`
+- create Resource Group with Log Analytics workspace
+- create Service Bus namespace with
+  - Topic
+  - two Subscriptions
+  - Correlation Filters for each subscription
+- create Blob Storage account with
+  - three Containers
+- create App Confgiruation with
+  - configuration key-value pairs from `azure_cli_scripts/app_config_KeyValue_set.json`
+- create three Function Apps with
+  - starage account per app
+  - App Insight connected to the resource log analytics workspace
+  - assigned roles to access Service Bus
+  - assigned roles to access Blob Storage
+  - assigned roles to access App Configuration
+- configure app settings for each Function App including
+  - end point for App Configuration
+  - reference for BlobConnection strings
+  - reference for Blob output container
+  - references to Service Bus topic
+  - references to Service Bus subscriptions
+
 
 ### DevOps: Creating build/test/deploy pipline with Yaml
