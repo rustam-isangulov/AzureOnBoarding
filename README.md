@@ -104,126 +104,29 @@ https://github.com/rustam-isangulov/AzureOnBoarding/blob/ac0e3c5e09812a555ad79fa
 
 `ServiceBusTrigger` service bus triggered function is defined as follows:
 
-```csharp
-[Function(nameof(ServiceBusTrigger))]
-[BlobOutput("%Output_container%/output_{DateTime}_{rand-guid}.txt", Connection = "BlobConnection")]
-public string Run
-([ServiceBusTrigger("%Trigger_topic%","%Trigger_subscription%", Connection = "ServiceBusConnection")]
-  string myQueueItem, FunctionContext context)
-{
-	// ... more code ...
-}
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/src/ProcessBlue/ServiceBusTrigger.cs#L19-L22
 
 ### Blob Storage output binding
 
 The following code uses declarative output binding for storage blob files:
 
-```csharp
-[Function(nameof(ServiceBusTrigger))]
-[BlobOutput("%Output_container%/output_{DateTime}_{rand-guid}.txt", Connection = "BlobConnection")]
-public string Run
-([ServiceBusTrigger("%Trigger_topic%","%Trigger_subscription%", Connection = "ServiceBusConnection")]
-    string myQueueItem, FunctionContext context)
-{
-	// ...
-
-  var blobContent = $"{appPropertiesJson}";
-
-	// ...
-
-	return blobContent;
-}
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/src/ProcessBlue/ServiceBusTrigger.cs#L17-L19
 
 ### App Configuration service to store binding parameters
 
 Values for `Output_container`, `BlobConnection`. `Trigger_topic`, `Trigger_subscription`, and `ServiceBusConnection` are retrieved from the App Configuration service via references in app settings, following Azure CLI script configures references:
 
-```bash
-configName="BlobConnection__serviceUri"
-configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:BlobConnection)"
-
-az functionapp config appsettings set \
-     --name $funcAppName \
-     --resource-group $resourceGroup \
-     --settings "$configName=$configValue"
-
-configName="Output_container"
-configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
-
-az functionapp config appsettings set \
-     --name $funcAppName \
-     --resource-group $resourceGroup \
-     --settings "$configName=$configValue"
-
-configName="ServiceBusConnection__fullyQualifiedNamespace"
-configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:ServiceBusConnection)"
-
-az functionapp config appsettings set \
-     --name $funcAppName \
-     --resource-group $resourceGroup \
-     --settings "$configName=$configValue"
-
-configName="Trigger_topic"
-configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
-
-az functionapp config appsettings set \
-     --name $funcAppName \
-     --resource-group $resourceGroup \
-     --settings "$configName=$configValue"
-
-configName="Trigger_subscription"
-configValue="@Microsoft.AppConfiguration(Endpoint=https://$appConfigServiceName.azconfig.io; Key=$funcAppName:$configName)"
-
-az functionapp config appsettings set \
-     --name $funcAppName \
-     --resource-group $resourceGroup \
-     --settings "$configName=$configValue"
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/azure_cli_scripts/special_app_cofigurations#L7-L46
 
 App Configuration service stores actual values and is configured as shown below:
 
-```json
-{
-  "ProcessBlue:BlobConnection": "https://processingoutputs.blob.core.windows.net",
-  "ProcessBlue:Output_container": "container-blue",
-  "ProcessBlue:ServiceBusConnection": "ProcessingQueues.servicebus.windows.net",
-  "ProcessBlue:Trigger_subscription": "blue",
-  "ProcessBlue:Trigger_topic": "colors_to_process",
-}
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/azure_cli_scripts/app_config_KeyValue_set.json#L2-L6
 
 ### RBAC configuration for Blob Storage, Service Bus and App Configuration
 
 When the function app is created the following roles are assigned to it in order to access Blob Storage, Service Bus and App Configuration:
 
-```bash
-az role assignment create \
-    --role "Azure Service Bus Data Sender" \
-    --assignee-object-id $funcAppId \
-    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
-
-az role assignment create \
-     --role "Azure Service Bus Data Receiver" \
-     --assignee $funcAppId \
-     --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.ServiceBus/namespaces/$serviceBusNamespace
-
-az role assignment create \
-    --role "Storage Blob Data Contributor" \
-    --assignee $funcAppId \
-    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
-
-az role assignment create \
-    --role "Storage Blob Data Reader" \
-    --assignee $funcAppId \
-    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.Storage/storageAccounts/$blobStorageAccount
-
-az role assignment create \
-    --role "App Configuration Data Reader" \
-    --assignee $funcAppId \
-    --scope /subscriptions/$subscriptionId/resourceGroups/$resourceGroup/providers/Microsoft.AppConfiguration/configurationStores/$appConfigServiceName
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/azure_cli_scripts/az_create_func_app#L37-L60
 
 ## DevOps: Creating infrastructure with azure cli
 
@@ -256,55 +159,6 @@ az role assignment create \
 
 All three Functions are built, tested and deployed on each new pull request using the Azure pipeline defined in `pipelines/azure-pipelines.yml`. The pipeline sequence for each app looks similar to `ProcessingStarter`:
 
-```yaml
-pr:
-- main
-
-pool:
-  vmImage: ubuntu-latest
-
-steps:
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build'
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: 'test'
-    projects: '**/*.csproj'
-
-- task: DotNetCoreCLI@2
-  displayName: 'ProcessingStarter dotnet publish'
-  inputs:
-    command: publish
-    arguments: '--configuration Release --output publish_output_ProcessingStarter'
-    projects: '**/ProcessingStarter.csproj'
-    publishWebProjects: false
-    modifyOutputPath: false
-    zipAfterPublish: false
-
-- task: ArchiveFiles@2
-  displayName: "ProcessingStarter archive files"
-  inputs:
-    rootFolderOrFile: "$(System.DefaultWorkingDirectory)/publish_output_ProcessingStarter"
-    includeRootFolder: false
-    archiveFile: "$(System.DefaultWorkingDirectory)/ProcessingStarter_build$(Build.BuildId).zip"
-
-- task: AzureFunctionApp@2
-  displayName: "ProcessingStarter Deploy"
-  inputs:
-    azureSubscription: 'isarust-conn'
-    appType: 'functionApp'
-    appName: 'ProcessingStarter'
-    deployToSlotOrASE: true
-    resourceGroupName: 'isarust-demo-rg'
-    slotName: 'production'
-    package: '$(System.DefaultWorkingDirectory)/ProcessingStarter_build$(Build.BuildId).zip'
-    deploymentMethod: 'auto'
-```
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/b2e88fb8766e5799d0d3072f656d4ce376c58cb8/pipelines/azure-pipelines.yml#L1-L106
 
 ---
