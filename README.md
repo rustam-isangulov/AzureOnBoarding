@@ -42,7 +42,7 @@ Implement a set of three function apps following the component diagram shown bel
 
 `ProcessBlue` HTTP triggered function is defined as follows:
 
-https://github.com/rustam-isangulov/AzureOnBoarding/blob/2202d9587e8e44ed023be8b388e5bfc6bed72511/src/ProcessingStarter/ProcessBlue.cs#L26C1-L29C1
+https://github.com/rustam-isangulov/AzureOnBoarding/blob/2202d9587e8e44ed023be8b388e5bfc6bed72511/src/ProcessingStarter/ProcessBlue.cs#L26-L29
 
 ```csharp
 [Function(nameof(ProcessBlue))]
