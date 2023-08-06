@@ -44,14 +44,6 @@ Implement a set of three function apps following the component diagram shown bel
 
 https://github.com/rustam-isangulov/AzureOnBoarding/blob/2202d9587e8e44ed023be8b388e5bfc6bed72511/src/ProcessingStarter/ProcessBlue.cs#L26-L29
 
-```csharp
-[Function(nameof(ProcessBlue))]
-public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
-{
-	// ... more code ...
-}
-```
-
 ### Multi-output binding
 
 The following code uses multi-output binding for HTTP response and storage blob file:
