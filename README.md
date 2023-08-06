@@ -130,19 +130,19 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 	// ...
 
 	var busMessage = new ServiceBusMessage($"Blue message to process")
-        {
-            CorrelationId = "blue",
-            ApplicationProperties =
-                {
-                    { "color", "blue" },
-                    { "text", "A different text payload." },
-                    { "number", 1000}
+		{
+    	CorrelationId = "blue",
+      ApplicationProperties =
+      	{
+        	{ "color", "blue" },
+          { "text", "A different text payload." },
+          { "number", 1000}
 				},
-	    };
+		};
 
 	// ...
 
-    	await _serviceBusTopicOutput.SendMessageAsync(busMessage);
+	await _serviceBusTopicOutput.SendMessageAsync(busMessage);
 
 	// ...
 }
@@ -155,20 +155,20 @@ public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
 {
 	// ...
 
-    	public ServiceBusOutputToColorsToProcess(ILogger<ServiceBusOutputToColorsToProcess> logger, IConfiguration configuration)
-    	{
+	public ServiceBusOutputToColorsToProcess(ILogger<ServiceBusOutputToColorsToProcess> logger, IConfiguration configuration)
+  {
 		// ...
 
-        	_sender = new ServiceBusClient(_configuration[ConfigurationKeys.ServiceBusConnection], new DefaultAzureCredential())
-   	         	.CreateSender(_configuration[ConfigurationKeys.ServiceBusTopic]);
-    	}
+    _sender = new ServiceBusClient(_configuration[ConfigurationKeys.ServiceBusConnection], new DefaultAzureCredential())
+   			.CreateSender(_configuration[ConfigurationKeys.ServiceBusTopic]);
+	}
 
-    	public async Task SendMessageAsync(ServiceBusMessage message)
-    	{
-		// ...
+  public async Task SendMessageAsync(ServiceBusMessage message)
+  	{
+			// ...
 
-        	await _sender.SendMessageAsync(message);
-    	}
+      await _sender.SendMessageAsync(message);
+		}
 }
 ```
 
@@ -186,15 +186,15 @@ To enable dependency injection `ServiceBusOutput` the following configuration to
 ```csharp
 var host = new HostBuilder()
 
-	// ...
+// ...
 
-	.ConfigureServices((context, services) =>
+.ConfigureServices((context, services) =>
 	{
-        	services.AddSingleton<IServiceBusOutputToTopic, ServiceBusOutputToColorsToProcess>();
+  	services.AddSingleton<IServiceBusOutputToTopic, ServiceBusOutputToColorsToProcess>();
 	})
-    	.Build();
+  .Build();
 
-	// ...
+// ...
 ```
 
 ### Using App Configuration service
@@ -208,15 +208,15 @@ var host = new HostBuilder()
 
 .ConfigureAppConfiguration(builder =>
 {
-        builder.AddAzureAppConfiguration(options =>
-        {
-            options.Connect(
-                new Uri(Environment.GetEnvironmentVariable(ConfigurationKeys.AppConfigEndpoint)
-                ?? throw new ArgumentNullException($"Environment variable {ConfigurationKeys.AppConfigEndpoint} is null!")),
-                new DefaultAzureCredential())
+	builder.AddAzureAppConfiguration(options =>
+  	{
+    	options.Connect(
+      	new Uri(Environment.GetEnvironmentVariable(ConfigurationKeys.AppConfigEndpoint)
+        	       ?? throw new ArgumentNullException($"Environment variable {ConfigurationKeys.AppConfigEndpoint} is null!")),
+               new DefaultAzureCredential())
             .Select("ProcessingStarter:*", LabelFilter.Null)
             .Select("ProcessingStarter:*", "CUSTOM");
-        });
+		});
 })
 
 // ...
@@ -297,11 +297,11 @@ public string Run
 {
 	// ...
 
-    	var blobContent = $"{appPropertiesJson}";
+  var blobContent = $"{appPropertiesJson}";
 
 	// ...
 
-    	return blobContent;
+	return blobContent;
 }
 ```
 
