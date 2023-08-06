@@ -127,18 +127,18 @@ App Configuration service stores actual values and is configured as shown below:
 [Function(nameof(ProcessBlue))]
 public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequestData req)
 {
-  // ...
+  	// ...
 
-  var busMessage = new ServiceBusMessage($"Blue message to process")
-    {
-      CorrelationId = "blue",
-      ApplicationProperties =
-      {
-        { "color", "blue" },
-        { "text", "A different text payload." },
-        { "number", 1000}
-      },
-    };
+  	var busMessage = new ServiceBusMessage($"Blue message to process")
+    		{
+      			CorrelationId = "blue",
+      			ApplicationProperties =
+      			{
+        			{ "color", "blue" },
+        			{ "text", "A different text payload." },
+        			{ "number", 1000}
+			},
+    		};
 
 	// ...
 
