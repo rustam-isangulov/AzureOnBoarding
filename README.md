@@ -5,10 +5,10 @@ Table of Content:
 - [ProcessingStarter](#processingstarter)
    - [HttpTrigger input binding](#httptrigger-input-binding)
    - [Multi-output binding](#multi-output-binding)
-   - [App Configuration service to store binding parameters](app-configuration-service-to-store-binding-parameters)
-   - [SDK Service Bus output to a topic](sdk-service-bus-output-to-a-topic)
-   - [Using App Configuration service](using-app-configuration-service)
-   - [RBAC configuration for Blob Storage, Service Bus and App Configuration](rbac-configuration-for-blob-storage-service-bus-and-app-configuration)
+   - [App Configuration service to store binding parameters](#app-configuration-service-to-store-binding-parameters)
+   - [SDK Service Bus output to a topic](#sdk-service-bus-output-to-a-topic)
+   - [Using App Configuration service](#using-app-configuration-service)
+   - [RBAC configuration for Blob Storage, Service Bus and App Configuration](#rbac-configuration-for-blob-storage-service-bus-and-app-configuration)
 
 Topics explored in this project:
 - [Azure Functions in isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
