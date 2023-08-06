@@ -1,5 +1,10 @@
 # Azure on-boarding project
 
+Table of Content:
+- [Objective](#objective)
+- [ProcessingStarter](#processingstarter)
+   - [HttpTrigger input binding](#httptrigger-input-binding)
+
 Topics explored in this project:
 - [Azure Functions in isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
 - [Service Bus with topics and subscriptions](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-tutorial-topics-subscriptions-cli)
