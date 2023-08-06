@@ -9,6 +9,14 @@ Table of Content:
    - [SDK Service Bus output to a topic](#sdk-service-bus-output-to-a-topic)
    - [Using App Configuration service](#using-app-configuration-service)
    - [RBAC configuration for Blob Storage, Service Bus and App Configuration](#rbac-configuration-for-blob-storage-service-bus-and-app-configuration)
+- [ProcessBlue: Service Bus trigger, Blob Storage output](#processblue-ervice-bus-trigger-blob-storage-output)
+   - [ServiceBusTrigger input binding](#servicebustrigger-input-binding)
+   - [Blob Storage output binding](#blob-storage-output-binding)
+   - [App Configuration service to store binding parameters](#app-configuration-service-to-store-binding-parameters)
+   - [RBAC configuration for Blob Storage, Service Bus and App Configuration](#rbac-configuration-for-blob-storage-service-bus-and-app-configuration]
+- [DevOps: Creating infrastructure with azure cli](#devops-creating-infrastructure-with-azure-cli)
+- [DevOps: Creating build/test/deploy pipeline with Yaml](#devops-creating-build-test-deploy-pipeline-with-yaml)
+
 
 Topics explored in this project:
 - [Azure Functions in isolated worker process](https://learn.microsoft.com/en-us/azure/azure-functions/dotnet-isolated-process-guide)
