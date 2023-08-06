@@ -129,7 +129,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 {
 	// ...
 
-    var busMessage = new ServiceBusMessage($"Blue message to process")
+	var busMessage = new ServiceBusMessage($"Blue message to process")
         {
             CorrelationId = "blue",
             ApplicationProperties =
@@ -142,7 +142,7 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 
 	// ...
 
-    await _serviceBusTopicOutput.SendMessageAsync(busMessage);
+    	await _serviceBusTopicOutput.SendMessageAsync(busMessage);
 
 	// ...
 }
@@ -155,20 +155,20 @@ public class ServiceBusOutputToColorsToProcess : IServiceBusOutputToTopic
 {
 	// ...
 
-    public ServiceBusOutputToColorsToProcess(ILogger<ServiceBusOutputToColorsToProcess> logger, IConfiguration configuration)
-    {
+    	public ServiceBusOutputToColorsToProcess(ILogger<ServiceBusOutputToColorsToProcess> logger, IConfiguration configuration)
+    	{
 		// ...
 
-        _sender = new ServiceBusClient(_configuration[ConfigurationKeys.ServiceBusConnection], new DefaultAzureCredential())
-            .CreateSender(_configuration[ConfigurationKeys.ServiceBusTopic]);
-    }
+        	_sender = new ServiceBusClient(_configuration[ConfigurationKeys.ServiceBusConnection], new DefaultAzureCredential())
+   	         	.CreateSender(_configuration[ConfigurationKeys.ServiceBusTopic]);
+    	}
 
-    public async Task SendMessageAsync(ServiceBusMessage message)
-    {
+    	public async Task SendMessageAsync(ServiceBusMessage message)
+    	{
 		// ...
 
-        await _sender.SendMessageAsync(message);
-    }
+        	await _sender.SendMessageAsync(message);
+    	}
 }
 ```
 
@@ -189,10 +189,10 @@ var host = new HostBuilder()
 	// ...
 
 	.ConfigureServices((context, services) =>
-    {
-        services.AddSingleton<IServiceBusOutputToTopic, ServiceBusOutputToColorsToProcess>();
-    })
-    .Build();
+	{
+        	services.AddSingleton<IServiceBusOutputToTopic, ServiceBusOutputToColorsToProcess>();
+	})
+    	.Build();
 
 	// ...
 ```
@@ -204,10 +204,10 @@ The following code adds Azure App Configuration to the function app:
 ```csharp
 var host = new HostBuilder()
 
-	// ...
+// ...
 
-    .ConfigureAppConfiguration(builder =>
-    {
+.ConfigureAppConfiguration(builder =>
+{
         builder.AddAzureAppConfiguration(options =>
         {
             options.Connect(
@@ -217,11 +217,11 @@ var host = new HostBuilder()
             .Select("ProcessingStarter:*", LabelFilter.Null)
             .Select("ProcessingStarter:*", "CUSTOM");
         });
-    })
+})
 
-	// ...
+// ...
 
-    .Build();
+.Build();
 ```
 
 Endpoint for the App Configuration service is stored in app settings, following Azure CLI commands configure it:
@@ -297,11 +297,11 @@ public string Run
 {
 	// ...
 
-    var blobContent = $"{appPropertiesJson}";
+    	var blobContent = $"{appPropertiesJson}";
 
 	// ...
 
-    return blobContent;
+    	return blobContent;
 }
 ```
 
