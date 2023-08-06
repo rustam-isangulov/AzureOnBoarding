@@ -13,9 +13,9 @@ Table of Content:
    - [ServiceBusTrigger input binding](#servicebustrigger-input-binding)
    - [Blob Storage output binding](#blob-storage-output-binding)
    - [App Configuration service to store binding parameters](#app-configuration-service-to-store-binding-parameters)
-   - [RBAC configuration for Blob Storage, Service Bus and App Configuration](#rbac-configuration-for-blob-storage-service-bus-and-app-configuration]
+   - [RBAC configuration for Blob Storage, Service Bus and App Configuration](#rbac-configuration-for-blob-storage-service-bus-and-app-configuration)
 - [DevOps: Creating infrastructure with azure cli](#devops-creating-infrastructure-with-azure-cli)
-- [DevOps: Creating build/test/deploy pipeline with Yaml](#devops-creating-build-test-deploy-pipeline-with-yaml)
+- [DevOps: Creating build/test/deploy pipeline with Yaml](#devops-creating-buildtestdeploy-pipeline-with-yaml)
 
 
 Topics explored in this project:
