@@ -70,8 +70,8 @@ public async Task<MultiOutputBlue> RunAsync([HttpTrigger(AuthorizationLevel.Anon
 
 	return new MultiOutputBlue()
 	{
-        BlobContent = blobPayload,
-        HttpResponse = response
+		BlobContent = blobPayload,
+		HttpResponse = response
 	};
 }
 ```
